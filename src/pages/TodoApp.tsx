@@ -4,7 +4,7 @@ import { TodoForm } from "@/components/todo/TodoForm";
 import { Todo } from "@/types/todo";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, CheckCircle2, Trash } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Trash, RefreshCw } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const TodoApp = () => {
@@ -23,43 +23,73 @@ const TodoApp = () => {
     }
     return [];
   });
+  const [error, setError] = useState<string | null>(null);
+  const [pendingOperation, setPendingOperation] = useState<{
+    type: "add" | "toggle" | "delete" | "clear";
+    data: any;
+  } | null>(null);
 
   const { toast } = useToast();
 
   useEffect(() => {
     // Convert Date objects to strings for storage
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
+    try {
+      localStorage.setItem("todos", JSON.stringify(todos));
+      // Clear error if storage was successful
+      if (error) setError(null);
+    } catch (err) {
+      console.error("Failed to save todos to localStorage:", err);
+      setError("Failed to save your changes. Please try again.");
+    }
+  }, [todos, error]);
 
   const addTodo = (text: string) => {
-    const newTodo: Todo = {
-      id: crypto.randomUUID(),
-      text,
-      completed: false,
-      createdAt: new Date(),
-    };
-    setTodos([...todos, newTodo]);
-    toast({
-      title: "Task added",
-      description: "Your new task has been added successfully.",
-    });
+    try {
+      const newTodo: Todo = {
+        id: crypto.randomUUID(),
+        text,
+        completed: false,
+        createdAt: new Date(),
+      };
+      setTodos([...todos, newTodo]);
+      toast({
+        title: "Task added",
+        description: "Your new task has been added successfully.",
+      });
+    } catch (err) {
+      console.error("Failed to add todo:", err);
+      setError("Failed to add task. Please try again.");
+      setPendingOperation({ type: "add", data: text });
+    }
   };
 
   const toggleTodo = (id: string) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-      ),
-    );
+    try {
+      setTodos(
+        todos.map((todo) =>
+          todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+        ),
+      );
+    } catch (err) {
+      console.error("Failed to toggle todo:", err);
+      setError("Failed to update task status. Please try again.");
+      setPendingOperation({ type: "toggle", data: id });
+    }
   };
 
   const deleteTodo = (id: string) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-    toast({
-      title: "Task deleted",
-      description: "The task has been removed.",
-      variant: "destructive",
-    });
+    try {
+      setTodos(todos.filter((todo) => todo.id !== id));
+      toast({
+        title: "Task deleted",
+        description: "The task has been removed.",
+        variant: "destructive",
+      });
+    } catch (err) {
+      console.error("Failed to delete todo:", err);
+      setError("Failed to delete task. Please try again.");
+      setPendingOperation({ type: "delete", data: id });
+    }
   };
 
   const clearCompleted = () => {
@@ -72,11 +102,40 @@ const TodoApp = () => {
       return;
     }
 
-    setTodos(todos.filter((todo) => !todo.completed));
-    toast({
-      title: "Completed tasks cleared",
-      description: `${completedCount} completed ${completedCount === 1 ? "task has" : "tasks have"} been removed.`,
-    });
+    try {
+      setTodos(todos.filter((todo) => !todo.completed));
+      toast({
+        title: "Completed tasks cleared",
+        description: `${completedCount} completed ${completedCount === 1 ? "task has" : "tasks have"} been removed.`,
+      });
+    } catch (err) {
+      console.error("Failed to clear completed todos:", err);
+      setError("Failed to clear completed tasks. Please try again.");
+      setPendingOperation({ type: "clear", data: null });
+    }
+  };
+
+  const retryOperation = () => {
+    if (!pendingOperation) return;
+
+    setError(null);
+
+    switch (pendingOperation.type) {
+      case "add":
+        addTodo(pendingOperation.data);
+        break;
+      case "toggle":
+        toggleTodo(pendingOperation.data);
+        break;
+      case "delete":
+        deleteTodo(pendingOperation.data);
+        break;
+      case "clear":
+        clearCompleted();
+        break;
+    }
+
+    setPendingOperation(null);
   };
 
   // Sort todos by creation date (newest first) and completion status
@@ -122,6 +181,21 @@ const TodoApp = () => {
           </div>
 
           <TodoForm onAddTodo={addTodo} />
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-md p-3 mb-4 flex items-center justify-between">
+              <p className="text-red-600 text-sm">{error}</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={retryOperation}
+                className="text-xs bg-white"
+              >
+                <RefreshCw className="mr-2 h-3 w-3" />
+                Retry
+              </Button>
+            </div>
+          )}
 
           <div className="space-y-2">
             {sortedTodos.length === 0 ? (

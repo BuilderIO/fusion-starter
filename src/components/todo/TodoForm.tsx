@@ -10,12 +10,16 @@ interface TodoFormProps {
 export const TodoForm: React.FC<TodoFormProps> = ({ onAddTodo }) => {
   const [text, setText] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddTodo = () => {
     if (text.trim()) {
       onAddTodo(text.trim());
       setText("");
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleAddTodo();
   };
 
   return (
@@ -27,7 +31,7 @@ export const TodoForm: React.FC<TodoFormProps> = ({ onAddTodo }) => {
         onChange={(e) => setText(e.target.value)}
         className="flex-1"
       />
-      <Button type="submit" disabled={!text.trim()}>
+      <Button type="button" disabled={!text.trim()} onClick={handleAddTodo}>
         <PlusCircle className="mr-2 h-4 w-4" />
         Add
       </Button>

@@ -8,7 +8,7 @@ const Index = () => {
   const [showBanner, setShowBanner] = useState(true);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-100 to-slate-200">
+    <div className="flex flex-col bg-gradient-to-br from-slate-100 to-slate-200">
       {showBanner && (
         <div className="w-full p-4">
           <Banner
