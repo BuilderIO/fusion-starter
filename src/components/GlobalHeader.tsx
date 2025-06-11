@@ -68,7 +68,7 @@ const OrganizationIcon = () => (
 
 export function GlobalHeader() {
   return (
-    <div className="flex w-full h-16 items-center justify-between bg-white border-b border-neutral-stroke px-4">
+    <div className="flex w-full h-16 items-center justify-between px-4">
       {/* Left section - App launcher and logo */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" className="p-1.5 h-12 w-12">
