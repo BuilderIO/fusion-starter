@@ -140,12 +140,7 @@ interface SidebarProps {
 export function Sidebar({ className }: SidebarProps) {
   const location = useLocation();
   return (
-    <div
-      className={cn(
-        "w-66 bg-white border-r border-neutral-stroke flex flex-col",
-        className,
-      )}
-    >
+    <div className={cn("w-66 flex flex-col", className)}>
       {/* Nav header with hamburger and user */}
       <div className="px-1.5 py-2">
         <div className="flex items-center gap-3 p-2 rounded">
