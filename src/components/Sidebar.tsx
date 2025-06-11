@@ -55,10 +55,13 @@ export function Sidebar({ className }: SidebarProps) {
       {/* Navigation items */}
       <nav className="flex-1 px-1.5 py-2 space-y-1">
         {/* Home */}
-        <div className="flex items-center gap-3 p-2 rounded hover:bg-gray-50">
+        <Link
+          to="/home"
+          className="flex items-center gap-3 p-2 rounded hover:bg-gray-50"
+        >
           <Home className="h-5 w-5 text-neutral-1" />
           <span className="text-sm text-neutral-1">Home</span>
-        </div>
+        </Link>
 
         {/* Account with dropdown */}
         <div className="flex items-center gap-3 p-2 rounded hover:bg-gray-50">
@@ -75,36 +78,72 @@ export function Sidebar({ className }: SidebarProps) {
         </div>
 
         {/* Launch apps */}
-        <div className="flex items-center gap-3 p-2 rounded hover:bg-gray-50">
+        <Link
+          to="/launch-apps"
+          className="flex items-center gap-3 p-2 rounded hover:bg-gray-50"
+        >
           <AppWindow className="h-5 w-5 text-neutral-1" />
           <span className="text-sm text-neutral-1">Launch apps</span>
-        </div>
+        </Link>
 
         {/* Manage access */}
-        <div className="flex items-center gap-3 p-2 rounded hover:bg-gray-50">
+        <Link
+          to="/manage-access"
+          className="flex items-center gap-3 p-2 rounded hover:bg-gray-50"
+        >
           <Lock className="h-5 w-5 text-neutral-1" />
           <span className="text-sm text-neutral-1">Manage access</span>
-        </div>
+        </Link>
 
         {/* Manage people - Active */}
-        <div className="flex items-center gap-3 p-2 rounded bg-blue-50 relative">
-          <div className="absolute -left-1.5 top-0 bottom-0 w-1 bg-contoso-blue rounded-r"></div>
-          <div className="w-5 h-5 bg-contoso-blue rounded-full flex items-center justify-center">
+        <Link
+          to="/manage-people"
+          className={cn(
+            "flex items-center gap-3 p-2 rounded relative",
+            location.pathname === "/manage-people" || location.pathname === "/"
+              ? "bg-blue-50"
+              : "hover:bg-gray-50",
+          )}
+        >
+          {(location.pathname === "/manage-people" ||
+            location.pathname === "/") && (
+            <div className="absolute -left-1.5 top-0 bottom-0 w-1 bg-contoso-blue rounded-r"></div>
+          )}
+          <div
+            className={cn(
+              "w-5 h-5 rounded-full flex items-center justify-center",
+              location.pathname === "/manage-people" ||
+                location.pathname === "/"
+                ? "bg-contoso-blue"
+                : "bg-gray-300",
+            )}
+          >
             <div className="w-3 h-3 bg-white rounded-full"></div>
           </div>
-          <span className="text-sm text-contoso-blue font-semibold">
+          <span
+            className={cn(
+              "text-sm",
+              location.pathname === "/manage-people" ||
+                location.pathname === "/"
+                ? "text-contoso-blue font-semibold"
+                : "text-neutral-1",
+            )}
+          >
             Manage people
           </span>
-        </div>
+        </Link>
 
         {/* Divider */}
         <div className="h-px bg-neutral-stroke my-3 mx-0"></div>
 
         {/* Give feedback */}
-        <div className="flex items-center gap-3 p-2 rounded hover:bg-gray-50">
+        <Link
+          to="/feedback"
+          className="flex items-center gap-3 p-2 rounded hover:bg-gray-50"
+        >
           <MessageSquare className="h-4 w-4 text-neutral-1" />
           <span className="text-sm text-neutral-1">Give feedback</span>
-        </div>
+        </Link>
       </nav>
     </div>
   );
